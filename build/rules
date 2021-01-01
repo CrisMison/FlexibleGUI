@@ -1,0 +1,7 @@
+include .config
+
+CC=$(CONFIG_COMPILE_PREFIX)-gcc
+AR=$(CONFIG_COMPILE_PREFIX)-ar
+LD=$(CONFIG_COMPILE_PREFIX)-ld
+
+STEP_CC = "echo "  [CC]    $^ -> $@"; $(CC) $@ -c $^"

@@ -1,0 +1,8 @@
+
+config CONFIG_LIB_STATIC
+    bool "Compile Static Library (libflexiblegui.a)"
+    default n
+    help
+        Compile static libraray or not. 
+        If it set to yes, then target will be libflexiblegui.a, and make sure you have copyright permission
+        If it set to no,  then target will be libflexiblegui.so

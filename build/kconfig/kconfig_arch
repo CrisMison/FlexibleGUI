@@ -1,0 +1,10 @@
+
+config CONFIG_COMPILE_PREFIX
+    string "The cross-complier prefix"
+    help 
+        Set the cross-compiler prefix. 
+        If the setting is empty, it will use the default gcc to compile source code without cross-compiler
+
+menu "Library & application setting"
+    source build/kconfig/kconfig_lib
+endmenu

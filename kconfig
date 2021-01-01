@@ -1,0 +1,12 @@
+
+# All configure should be in directory "build/kconfig"
+
+# Architecuture and build setting, include the cross-complie setting, prefix, etc.
+
+menu "Architecuture & Build Setting"
+source "build/kconfig/kconfig_arch"
+endmenu
+
+menu "Tools & Debug"
+source "build/kconfig/kconfig_tools"
+endmenu

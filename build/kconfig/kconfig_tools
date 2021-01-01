@@ -1,0 +1,7 @@
+
+config CONFIG_TOOLS_DUMMY
+    bool "Enable DUMMY virtual display framework"
+    default n
+    help
+        Enable the DUMMY virtual display framework to moniter the GDI output buffer
+        This is only for debugging the FlexibleGUI kernel
