@@ -27,4 +27,39 @@ typedef enum
     MEMPOOL_MAX,
 }MEMPOOL_TYPE_IDX;
 
+
+#include "fg_common.h"
+#include "fg_mempool.h"
+
+static MEMPOOL_BASE sg_stMemPool[MEMPOOL_MAX];
+
+/** 
+ * Function:    
+ *              fg_get_mempool
+ * Description: 
+ *              Get the mempool by specific memory pool index
+ * */
+MEMPOOL_BASE* fg_get_mempool(FG_INT32 iPoolIdx);
+/** 
+ * Function:    
+ *              fg_alloc_memory
+ * Description: 
+ *              Allocate a memory from the specific memory pool
+ * Notice:      
+ *              The mempool will be allocated a memory.If the memory pool hasn't enough memory, then the
+ *              pool will be truncated automatically.
+ * */
+FG_PTR   fg_alloc_memory(FG_INT32 iPoolIdx, FG_INT32 iSize);
+
+/** 
+ * Function:    
+ *              fg_alloc_memory
+ * Description: 
+ *              Allocate a memory from the specific memory pool
+ * Notice:      
+ *              The mempool will be allocated a memory.If the memory pool hasn't enough memory, then the
+ *              pool will be truncated automatically.
+ * */
+FG_INT32   fg_free_memory(FG_INT32 iPoolIdx, FG_PTR pAddr);
+
 #endif

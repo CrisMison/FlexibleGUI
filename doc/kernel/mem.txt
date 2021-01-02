@@ -1,0 +1,47 @@
+ 
+FlexibleGUI Documents:  Memory Pool
+Author:                 Yibing Bai
+Version:                v1.0(2021-1-2)
+
+1.  Overview
+    All memory allocated in FlexibleGUI kernel is allocated by the memory pool strategy(mempool). Mempool have many
+    different types, defined as MEMPOOL_TYPE_IDX:
+        typedef enum
+        {
+            MEMPOOL_WINDOW,     /* Mempool for windows node */
+            MEMPOOL_MAX,
+        }MEMPOOL_TYPE_IDX;
+
+    The benifits of mempool strategy are: 
+    *   Mempool is a good strategy for moniting the memory usage of the FlexibleGUI kernel, which is important to know
+        the shortcoming of kernel, and optimizating continuously
+    *   Mempool is a good way to monite whether there is a illegal memory access which is out of control by the mempool.
+    *   Mempool is a good framework in other project which need to replace the management strategy of memory in the 
+        specify architecture planning, because mempool abstraced a layer for doing that.
+
+2.  How to use the memory pool
+    There are some important function of the mempool, which can be called in the kernel, as memtioned above, all memory
+    allocated or freed in the FlexibleGUI kernel are by following interface. We can find out that the iPoolIdx in parameter 
+    is essitail. Every memory-operated step must specify the memory pool
+        FG_PTR   fg_alloc_memory(FG_INT32 iPoolIdx, FG_INT32 iSize);
+        FG_INT32 fg_free_memory(FG_INT32 iPoolIdx, FG_PTR pAddr);
+
+    The size is aligned by MEMPOOL_BLOCK_ALIGN inside the interface, which is default to 16 bytes. If the size you want isn't
+    aligned by MEMPOOL_BLOCK_ALIGN, finally you will get a 16 bytes aligned memory instead and returnd by retval.
+
+    Once the memory allocated successfully, it will allocated a r/w memory from VA(or PA in some embedded system) by "malloc",
+    and be recorded in the mempool for management.
+
+    Once you want free the memory allocated by function "fg_alloc_memory", you need transfer the pointer to "fg_free_memory",
+    it will detect whether the pointer is recorded by the specific mempool.
+
+3.  Warning & Notice
+    *   When developing or modifing the kernel, all functions that can allocated memory or maped memory are strictlly forbid 
+        except for functions defined in mempool, or others listed below.
+            a)
+            b)
+            c)
+    *   Pay attention to the log printed by mempool, it must be the highest level error in the FlexibleGUI kernel
+
+
+    
