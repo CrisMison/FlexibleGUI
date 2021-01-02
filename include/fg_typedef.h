@@ -13,6 +13,9 @@
 #define FG_UINT64   unsigned long long int
 #define FG_VOID     void
 #define FG_PTR      void*
+#define FG_BOOL     int
+#define FG_TRUE     1
+#define FG_FALSE    0
 
 typedef enum
 {
