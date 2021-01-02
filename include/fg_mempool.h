@@ -24,6 +24,7 @@ typedef struct _MEMPOOL_BASE
 typedef enum
 {
     MEMPOOL_WINDOW,
+    MEMPOOL_DRIVER,
     MEMPOOL_MAX,
 }MEMPOOL_TYPE_IDX;
 

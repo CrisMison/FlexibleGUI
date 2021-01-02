@@ -7,6 +7,11 @@ menu "Architecuture & Build Setting"
 source "build/kconfig/kconfig_arch"
 endmenu
 
-menu "Tools & Debug"
+menu "Driver Setting"
+source "build/kconfig/kconfig_driver"
+endmenu
+
+
+menu "Tools & Debug Setting"
 source "build/kconfig/kconfig_tools"
 endmenu

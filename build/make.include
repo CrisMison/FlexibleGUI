@@ -1,2 +1,3 @@
 
 INC_PATH += -I$(ROOTDIR)/include
+INC_PATH += -I$(ROOTDIR)/classic/kernel/include

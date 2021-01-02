@@ -1,0 +1,5 @@
+config CONFIG_DRIVER_OUTPUT_SCREEN
+    int "Output Screen Number"
+    default 1
+    help 
+        The output screen(s) amount, default set to 1
