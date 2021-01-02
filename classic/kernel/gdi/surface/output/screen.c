@@ -1,9 +1,9 @@
 #include "fg_common.h"
-#include "fg_driver.h"
+#include "fg_surface.h"
 #include "fg_mempool.h"
 #include "inc_driver.h"
 
-static DRIVER_OUTPUT_BUFFER_PARAM sg_stOutputDriver[DRIVER_SCRREN_MAX];
+static SURFACE_OUTPUT_BUFFER_PARAM sg_stOutputDriver[DRIVER_SCRREN_MAX];
 
 /** 
  * Function:    
@@ -12,7 +12,7 @@ static DRIVER_OUTPUT_BUFFER_PARAM sg_stOutputDriver[DRIVER_SCRREN_MAX];
  *              Register the output screen parameter
  *              Driver should be initialized before call this function
  * */
-FG_INT32 fg_driver_register_output_screen(FG_INT32 iScreenIdx, DRIVER_OUTPUT_BUFFER_PARAM* pParam)
+FG_INT32 fg_surface_register_output_screen(FG_INT32 iScreenIdx, SURFACE_OUTPUT_BUFFER_PARAM* pParam)
 {
     FG_INT32 iSize = 0;
     FG_PTR   pBuffer = NULL;
@@ -45,7 +45,7 @@ FG_INT32 fg_driver_register_output_screen(FG_INT32 iScreenIdx, DRIVER_OUTPUT_BUF
     iSize = pParam->iWidth * pParam->iHeight * pParam->iDepth;
     
     /* Test the vo buffer that whether it can be read or written or not */
-    pBuffer = fg_alloc_memory(MEMPOOL_DRIVER, iSize);
+    pBuffer = fg_alloc_memory(MEMPOOL_GDI, iSize);
     if(!pBuffer)
     {
         FG_ERR("Out of memory!\n");
@@ -55,9 +55,9 @@ FG_INT32 fg_driver_register_output_screen(FG_INT32 iScreenIdx, DRIVER_OUTPUT_BUF
     memcpy(pBuffer, pParam->pVoBuff, iSize);
     memcpy(pParam->pVoBuff, pBuffer, iSize);
 
-    fg_free_memory(MEMPOOL_DRIVER, pBuffer);
+    fg_free_memory(MEMPOOL_GDI, pBuffer);
 
-    memcpy(&sg_stOutputDriver[iScreenIdx], pParam, sizeof(DRIVER_OUTPUT_BUFFER_PARAM));
+    memcpy(&sg_stOutputDriver[iScreenIdx], pParam, sizeof(SURFACE_OUTPUT_BUFFER_PARAM));
 
     return FG_OK;
 }

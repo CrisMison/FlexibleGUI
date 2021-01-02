@@ -25,6 +25,7 @@ typedef enum
 {
     MEMPOOL_WINDOW,
     MEMPOOL_DRIVER,
+    MEMPOOL_GDI,
     MEMPOOL_MAX,
 }MEMPOOL_TYPE_IDX;
 
