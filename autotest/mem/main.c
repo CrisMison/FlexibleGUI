@@ -10,7 +10,7 @@ FG_INT32 main(FG_INT32 iArgs, FG_CHAR* sArgc[])
     FG_INT32    iIdx = 0;
     FG_INT32    iSize = 0;
     FG_INT32    iRet = 0;
-    FG_INT32    iCnt = 1024;
+    FG_INT32    iCnt = 100000000;
 
     if(iArgs > 1)
     {
@@ -23,16 +23,17 @@ FG_INT32 main(FG_INT32 iArgs, FG_CHAR* sArgc[])
     for(;iCnt >= 0; iCnt--)
     {
         iIdx  = random() % MAX_ARRAY_SIZE;
-        iSize = random() % MAX_SIZE;
+        iSize = random() % MAX_SIZE + 1;
 
         if(bAllocate[iIdx] == FG_FALSE)
         {
             pPointer[iIdx] = fg_alloc_memory(MEMPOOL_WINDOW, iSize);
-            if(!pPointer)
+            if(!pPointer[iIdx] )
             {
                 FG_ERR("Testing failed: Allocated: iIdx = %d, iSize = %d\n", iIdx, iSize);
                 goto fail;
             }
+            
             
             bAllocate[iIdx] = FG_TRUE;
         }
@@ -50,6 +51,7 @@ FG_INT32 main(FG_INT32 iArgs, FG_CHAR* sArgc[])
         }
     }
 
+    goto ok;
 fail:
     FG_ERR("Testing Program will be halt for debug\n");
     while(FG_TRUE);

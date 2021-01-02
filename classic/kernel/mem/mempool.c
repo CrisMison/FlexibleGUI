@@ -1,7 +1,7 @@
 #include "fg_common.h"
 #include "fg_mempool.h"
 
-static MEMPOOL_BASE sg_stMemPool[MEMPOOL_MAX];
+MEMPOOL_BASE sg_stMemPool[MEMPOOL_MAX];
 
 /** 
  * Function:    
@@ -36,6 +36,30 @@ static FG_VOID   fg_free(FG_PTR pPtr)
     }
 }
 
+static FG_INT32 fg_get_list_num(MEMPOOL_BASE* pBase)
+{
+    MEMPOOL_NODE* pNext = NULL;
+    FG_INT32      iNum = 0;
+    if(!pBase)
+    {
+        return FG_ERROR;
+    }
+
+    if(pBase->pNodeList == NULL)
+    {
+        return 0;
+    }
+
+    pNext = pBase->pNodeList;
+    while(pNext)
+    {
+        iNum++;
+        pNext = pNext->pNextNode;
+    }
+
+    return iNum;
+}
+
 /** 
  * Function:    
  *              fg_insert_node
@@ -52,9 +76,14 @@ static FG_INT32  fg_insert_node(MEMPOOL_BASE* pBase, MEMPOOL_NODE* pNode)
     }
 
     pNext = pBase->pNodeList;
+    if(!pNext)
+    {
+        pBase->pNodeList = pNode;
+        return FG_OK;
+    }
 
     /* Loop for find the last node in the single-direction list */
-    while(pNext->pNextNode != NULL)
+    while(pNext && pNext->pNextNode != NULL)
     {
         pNext = pNext->pNextNode;
     }
@@ -108,6 +137,7 @@ static MEMPOOL_NODE*  fg_find_node(MEMPOOL_BASE* pBase, FG_PTR pAddr)
 static FG_INT32  fg_unlink_node(MEMPOOL_BASE* pBase, MEMPOOL_NODE* pNode)
 {
     MEMPOOL_NODE* pNext = NULL;
+    MEMPOOL_NODE* pLast = NULL;
     MEMPOOL_NODE* pTemp = NULL;
 
     if(!pBase || !pNode)
@@ -116,21 +146,39 @@ static FG_INT32  fg_unlink_node(MEMPOOL_BASE* pBase, MEMPOOL_NODE* pNode)
     }
 
     pNext = pBase->pNodeList;
-
-    /* Loop for find the last node in the single-direction list */
-    while(pNext && pNext->pNextNode != pNode)
-    {
-        pNext = pNext->pNextNode;
-    }
-
     if(pNext == NULL)
     {
         return FG_ERROR;
     }
 
-    pNext->pNextNode = pNode->pNextNode->pNextNode;
+    /* Loop for find the last node in the single-direction list */
+    while(pNext && pNext != pNode)
+    {
+        pLast = pNext;
+        pNext = pNext->pNextNode;
+    }
 
-    return FG_OK;
+    if(pLast == NULL && pNext->pNextNode == NULL)
+    {
+        pBase->pNodeList = NULL;
+        return FG_OK;
+    }
+    else
+    {
+        if(pLast)
+        {
+            pLast->pNextNode = pLast->pNextNode->pNextNode;
+            return FG_OK;
+        }
+        else
+        {
+            pBase->pNodeList = pNext->pNextNode;
+            return FG_OK;
+        }
+        
+    }
+
+    return FG_ERROR;
 }
 
 /** 
@@ -143,7 +191,7 @@ MEMPOOL_BASE* fg_get_mempool(FG_INT32 iPoolIdx)
 {
     if(iPoolIdx >= MEMPOOL_MAX)
     {
-        FG_ERR("Pool index error, iPoolIdx %d", iPoolIdx);
+        FG_ERR("Pool index error, iPoolIdx %d\n", iPoolIdx);
         return (MEMPOOL_BASE*)NULL;
     }
 
@@ -168,7 +216,7 @@ FG_PTR   fg_alloc_memory(FG_INT32 iPoolIdx, FG_INT32 iSize)
     
     if(iPoolIdx >= MEMPOOL_MAX || iSize <= 0)
     {
-        FG_ERR("Parameter error, iPoolIdx %d, iSize = %d", iPoolIdx, iSize);
+        FG_ERR("Parameter error, iPoolIdx %d, iSize = %d\n", iPoolIdx, iSize);
         return (FG_PTR)NULL;
     }
 
@@ -177,14 +225,14 @@ FG_PTR   fg_alloc_memory(FG_INT32 iPoolIdx, FG_INT32 iSize)
     pNode = (MEMPOOL_NODE*)fg_zalloc(sizeof(MEMPOOL_NODE));
     if(!pNode)
     {
-        FG_ERR("Can't allocate memory!");
+        FG_ERR("Can't allocate memory!\n");
         return (FG_PTR)NULL;
     }
 
     pNode->pBaseAddr = fg_zalloc(iCalSize);
     if(!pNode->pBaseAddr)
     {
-        FG_ERR("Can't allocate memory!");
+        FG_ERR("Can't allocate memory!\n");
         fg_free(pNode);
         return (FG_PTR)NULL;
     }
@@ -194,7 +242,7 @@ FG_PTR   fg_alloc_memory(FG_INT32 iPoolIdx, FG_INT32 iSize)
     iRet = fg_insert_node(&sg_stMemPool[iPoolIdx], pNode);
     if(iRet != FG_OK)
     {
-        FG_ERR("Can't insert memory to the management list!");
+        FG_ERR("Can't insert memory to the management list!\n");
         fg_free(pNode->pBaseAddr);
         fg_free(pNode);
         return (FG_PTR)NULL;
@@ -223,26 +271,35 @@ FG_INT32   fg_free_memory(FG_INT32 iPoolIdx, FG_PTR pAddr)
     
     if(iPoolIdx >= MEMPOOL_MAX || !pAddr)
     {
-        FG_ERR("Parameter error, iPoolIdx %d, pAddr = %p", iPoolIdx, pAddr);
+        FG_ERR("Parameter error, iPoolIdx %d, pAddr = %p\n", iPoolIdx, pAddr);
         return FG_ERROR;
     }
 
     pNode = fg_find_node(&sg_stMemPool[iPoolIdx], pAddr);
     if(!pNode)
     {
-        FG_ERR("Can't match pointer %p in mempool %d", pAddr, iPoolIdx);
+        FG_ERR("Can't match pointer %p in mempool %d\n", pAddr, iPoolIdx);
         return FG_ERROR;
     }
 
     iRet = fg_unlink_node(&sg_stMemPool[iPoolIdx], pNode);
     if(iRet != FG_OK)
     {
-        FG_ERR("Can't unlink node %p in mempool %d", pNode, iPoolIdx);
+        FG_ERR("Can't unlink node %p in mempool %d\n", pNode, iPoolIdx);
         return FG_ERROR;
     }
 
+    sg_stMemPool[iPoolIdx].iTotalSize -= pNode->iSize;
+    sg_stMemPool[iPoolIdx].iNodeNum--;
+
     fg_free(pNode->pBaseAddr);
     fg_free(pNode);
+
+    if(fg_get_list_num(&sg_stMemPool[iPoolIdx]) != sg_stMemPool[iPoolIdx].iNodeNum)
+    {
+        FG_ERR("ERROR!");
+        while(FG_TRUE);
+    }
 
     return FG_OK;
 }

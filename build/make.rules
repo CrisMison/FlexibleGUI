@@ -6,6 +6,6 @@ CC=$(CONFIG_COMPILE_PREFIX)gcc
 AR=$(CONFIG_COMPILE_PREFIX)ar
 LD=$(CONFIG_COMPILE_PREFIX)ld
 
-STEP_CC 			= echo "    [$(CC)]\t$< -> $@"; $(CC) -c $< -o $@ $(INC_PATH)
+STEP_CC 			= echo "    [$(CC)]\t$< -> $@"; $(CC) -g -c $< -o $@ $(INC_PATH)
 STEP_LD_STATIC		= echo "    [$(AR)]\t$@"; $(AR) -rv $@ $^ >/dev/null  2>&1
 STEP_LD_DYM			= echo "    [$(CC)]\t$@"; $(CC) -shared -fPIC -o $@ $^ >/dev/null  2>&1

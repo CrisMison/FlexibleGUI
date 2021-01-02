@@ -27,12 +27,6 @@ typedef enum
     MEMPOOL_MAX,
 }MEMPOOL_TYPE_IDX;
 
-
-#include "fg_common.h"
-#include "fg_mempool.h"
-
-static MEMPOOL_BASE sg_stMemPool[MEMPOOL_MAX];
-
 /** 
  * Function:    
  *              fg_get_mempool
